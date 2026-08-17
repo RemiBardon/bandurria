@@ -73,28 +73,24 @@ pub fn ensure_states() {
 
 pub async fn deliver_faillible(
     to: &str,
-    subject: String,
+    subject: &str,
     body: String,
-) -> Result<SmtpResponse, ()> {
+) -> Result<SmtpResponse, String> {
     let email = Message::builder()
         .from(SMTP_MAILBOX.to_owned())
-        .to(to.parse().or(Err(()))?)
+        .to(to.parse::<Mailbox>().map_err(|err| err.to_string())?)
         .subject(subject)
         .body(body)
-        .or(Err(()))?;
+        .map_err(|err| err.to_string())?;
 
-    SMTP_TRANSPORT.send(&email).or(Err(()))
+    SMTP_TRANSPORT.send(&email).map_err(|err| err.to_string())
 }
 
 pub async fn deliver(to: &str, subject: String, body: String) {
-    deliver_faillible(to, subject.to_owned(), body.to_owned())
-        .await
-        .map_err(|_| {
-            error!(
-                "failed delivering email to: {}, with subject: '{}'\n\n{}",
-                to, &subject, &body
-            )
-        })
-        .map(|_| info!("delivered email to: {}", to))
-        .ok();
+    match deliver_faillible(to, &subject, body.clone()).await {
+        Ok(_) => info!("delivered email to {to:?}"),
+        Err(err) => {
+            error!("failed delivering email to {to:?} with subject {subject:?}: {err}\n\n{body}")
+        }
+    }
 }
