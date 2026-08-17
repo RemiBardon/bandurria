@@ -7,7 +7,7 @@
 use std::sync::LazyLock;
 
 use hex;
-use hmac::{Hmac, Mac};
+use hmac::{Hmac, KeyInit as _, Mac};
 use rocket::http::Status;
 use sha2::Sha256;
 
