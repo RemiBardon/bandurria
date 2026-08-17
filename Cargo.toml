@@ -29,7 +29,7 @@ sha2 = "0.11"
 hmac = "0.13"
 hex = "0.4"
 base64-url = "3.0"
-linkify = "0.10"
+linkify = "0.11"
 validator = { version = "0.20", features = ["derive"] }
 uuid = { version = "1.24", features = ["v4", "fast-rng"] }
 chrono = { version = "0.4", features = ["clock"] }
