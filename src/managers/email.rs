@@ -5,6 +5,7 @@
 // License: Mozilla Public License v2.0 (MPL v2.0)
 
 use std::ops::Deref;
+use std::sync::LazyLock;
 use std::time::Duration;
 
 use lettre::message::Mailbox;
@@ -17,10 +18,8 @@ use crate::APP_CONF;
 
 const SMTP_TIMEOUT: Duration = Duration::from_secs(6);
 
-lazy_static! {
-    static ref SMTP_TRANSPORT: SmtpTransport = make_smtp_transport();
-    static ref SMTP_MAILBOX: Mailbox = make_smtp_mailbox();
-}
+static SMTP_TRANSPORT: LazyLock<SmtpTransport> = LazyLock::new(make_smtp_transport);
+static SMTP_MAILBOX: LazyLock<Mailbox> = LazyLock::new(make_smtp_mailbox);
 
 fn make_smtp_transport() -> SmtpTransport {
     let config = &APP_CONF.email.smtp;

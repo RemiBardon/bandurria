@@ -4,6 +4,8 @@
 // Copyright: 2025, Valerian Saliou <valerian@valeriansaliou.name>
 // License: Mozilla Public License v2.0 (MPL v2.0)
 
+use std::sync::LazyLock;
+
 use hex;
 use hmac::{Hmac, Mac};
 use rocket::http::Status;
@@ -14,14 +16,14 @@ use crate::APP_CONF;
 
 type HmacSha256 = Hmac<Sha256>;
 
-lazy_static! {
-    static ref ADMIN_EMAIL_HASHES: Vec<String> = APP_CONF
+static ADMIN_EMAIL_HASHES: LazyLock<Vec<String>> = LazyLock::new(|| {
+    APP_CONF
         .site
         .admin_emails
         .iter()
         .map(|admin_email| normalize::email_hash(&admin_email))
-        .collect();
-}
+        .collect()
+});
 
 pub fn check_email_hash_is_admin(email_hash: &String) -> bool {
     ADMIN_EMAIL_HASHES.contains(email_hash)

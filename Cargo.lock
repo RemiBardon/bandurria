@@ -199,7 +199,6 @@ dependencies = [
  "envsubst",
  "hex",
  "hmac",
- "lazy_static",
  "lettre",
  "linkify",
  "log",
